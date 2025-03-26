@@ -88,4 +88,8 @@
   a {
     @apply text-red-400 hover:text-red-600 transition-colors duration-300;
   }
+
+  blockquote {
+    @apply border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700;
+  }
 }
