@@ -5,6 +5,7 @@ import TitleWithNavigation from "../../../components/TitleWithNavigation.astro";
 import { getEntry } from "astro:content";
 import QualifyingResults from "../../../components/QualifyingResults.astro";
 import RaceResults from "../../../components/RaceResults.astro";
+import DriverStandings from "../../../components/DriverStandings.astro";
 
 export async function getStaticPaths() {
   const races = await getCollection("results");
@@ -86,6 +87,11 @@ const { data: circuit } = await getEntry(circuitId);
       <div class="my-2">
         <h3 class="mb-4">Race Results</h3>
         <RaceResults season={season} round={round} />
+      </div>
+
+      <div class="my-2">
+        <h3 class="mb-4">Driver Standings after race</h3>
+        <DriverStandings season={season} round={round} />
       </div>
     </div>
   </main>

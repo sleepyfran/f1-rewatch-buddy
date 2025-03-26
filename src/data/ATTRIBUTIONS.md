@@ -2,6 +2,7 @@ The following files:
 
 - `src/data/circuits.csv`
 - `src/data/constructors.csv`
+- `src/data/driver_standings.csv`
 - `src/data/drivers.csv`
 - `src/data/results.csv`
 

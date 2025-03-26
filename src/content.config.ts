@@ -32,6 +32,26 @@ const constructors = defineCollection({
   }),
 });
 
+const driverStandings = defineCollection({
+  loader: file("src/data/driver_standings.csv", {
+    parser: (fileContent) =>
+      csvParse(fileContent, {
+        columns: true,
+        skip_empty_lines: true,
+        delimiter: ";",
+      }),
+  }),
+  schema: z.object({
+    id: z.string(),
+    season: z.coerce.number().min(2000).max(2024),
+    round: z.coerce.number().min(1).max(25),
+    position: z.coerce.number().min(0).max(30),
+    points: z.coerce.number().min(0).max(1000),
+    wins: z.coerce.number().min(0).max(25),
+    driverId: reference("drivers"),
+  }),
+});
+
 const drivers = defineCollection({
   loader: file("src/data/drivers.csv", {
     parser: (fileContent) =>
@@ -86,6 +106,7 @@ const seasons = defineCollection({
 export const collections = {
   circuits,
   constructors,
+  driverStandings,
   drivers,
   results,
   seasons,
