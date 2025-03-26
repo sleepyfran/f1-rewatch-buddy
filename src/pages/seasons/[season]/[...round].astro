@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import TitleWithNavigation from "../../../components/TitleWithNavigation.astro";
+import { getEntry } from "astro:content";
+import QualifyingResults from "../../../components/QualifyingResults.astro";
+
+export async function getStaticPaths() {
+  const races = await getCollection("results");
+  return races.map(({ data: { season, round } }) => ({
+    params: { season: String(season), round: String(round) },
+  }));
+}
+
+const { season: seasonStr, round: roundStr } = Astro.params;
+
+const season = parseInt(seasonStr);
+const round = parseInt(roundStr);
+
+const allRaces = await getCollection("results");
+const allSeasonRounds = allRaces.filter(
+  ({ data: { season: raceSeason } }) => raceSeason === season
+);
+
+// This is technically the information for the first driver in the round,
+// but we can use it to get shared information about the round.
+const roundInformation = allSeasonRounds.find(
+  ({ data: { round: raceRound } }) => raceRound === round
+);
+if (!roundInformation) {
+  throw new Error(`Round ${round} not found for season ${season}`);
+}
+
+const lastRound = Math.max(
+  ...allSeasonRounds.map(({ data: { round } }) => round)
+);
+
+const previousRound = round > 1 ? round - 1 : undefined;
+const nextRound = round < lastRound ? round + 1 : undefined;
+
+const { circuitId } = roundInformation.data;
+
+const { data: circuit } = await getEntry(circuitId);
+---
+
+<Layout>
+  <main>
+    <TitleWithNavigation
+      previous={previousRound
+        ? `/seasons/${season}/${previousRound}`
+        : undefined}
+      next={nextRound ? `/seasons/${season}/${nextRound}` : undefined}
+      title={`Season ${season}, ${circuit.country}`}
+    />
+    <div class="flex items-baseline gap-4">
+      <h4>
+        <a target="_blank" href={circuit.wikiUrl}>{circuit.name}</a>
+      </h4>
+      <p class="font-bold">Pending to watch</p>
+    </div>
+
+    <div class="flex items-baseline gap-2">
+      <p>Mark as:</p>
+      <button class="button-like-sm">Currently watching</button>
+      <button class="button-like-sm">Watched</button>
+    </div>
+
+    <div class="mt-4">
+      <h2 class="font-light mb-4">Before you watch</h2>
+
+      <div class="my-2">
+        <h3 class="mb-4">Qualifying Results</h3>
+        <QualifyingResults season={season} round={round} />
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <h2 class="font-light mb-4">After you watch</h2>
+      <p>
+        The results of the race and other info will be shown once you mark the
+        race as watched.
+      </p>
+    </div>
+  </main>
+</Layout>

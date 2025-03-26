@@ -1,0 +1,27 @@
+---
+type Props = {
+  previous?: string;
+  next?: string;
+  title: string;
+};
+
+const { previous, next, title } = Astro.props;
+---
+
+<div class="mt-4 flex items-center gap-4">
+  {
+    previous && (
+      <a title="Previous season" class="text-2xl" href={previous}>
+        ⏮︎
+      </a>
+    )
+  }
+  <h1>{title}</h1>
+  {
+    next && (
+      <a title="Next season" class="text-2xl" href={next}>
+        ⏭︎
+      </a>
+    )
+  }
+</div>

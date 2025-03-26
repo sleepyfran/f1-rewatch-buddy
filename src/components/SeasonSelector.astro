@@ -7,13 +7,10 @@ const seasons = await getCollection("seasons");
 <div>
   <h2>Seasons</h2>
 
-  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
     {
       seasons.map(({ data: { id } }) => (
-        <a
-          href={`/seasons/${id}`}
-          class="block p-4 m-2 text-center bg-gray-200 rounded-md hover:bg-gray-300"
-        >
+        <a href={`/seasons/${id}`} class="button-like">
           {id}
         </a>
       ))

@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import { partition, sortBy } from "lodash-es";
+
+type Props = {
+  season: number;
+  round: number;
+};
+
+const { season, round } = Astro.props;
+
+const allRaces = await getCollection("results");
+const roundResults = allRaces.filter(
+  ({ data: { season: raceSeason, round: raceRound } }) =>
+    raceSeason === season && raceRound === round
+);
+
+const [grid, nonQualifiedGrid] = partition(
+  roundResults,
+  ({ data: { grid } }) => grid > 0
+);
+
+async function resolveReferences({ data }: CollectionEntry<"results">) {
+  const constructor = await getEntry(data.constructorId);
+  const driver = await getEntry(data.driverId);
+
+  return {
+    ...data,
+    driver: driver.data,
+    constructor: constructor.data,
+  };
+}
+
+const orderedGrid = await Promise.all(
+  sortBy(grid, ({ data: { grid } }) => grid).map(resolveReferences)
+);
+const didNotQualify = await Promise.all(
+  nonQualifiedGrid.map(resolveReferences)
+);
+
+const thClasses = "px-6 py-3";
+---
+
+<table class="table-fixed bg-red-100 border-red-400 border-2">
+  <thead class="text-sm text-gray-700">
+    <tr>
+      <th scope="col" class={thClasses}>Grid</th>
+      <th scope="col" class={thClasses}>Driver</th>
+      <th scope="col" class={thClasses}>Constructor</th>
+      <th scope="col" class={thClasses}>Q1</th>
+      <th scope="col" class={thClasses}>Q2</th>
+      <th scope="col" class={thClasses}>Q3</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      [...orderedGrid, ...didNotQualify].map(
+        ({ grid, driver, constructor }) => (
+          <tr class="border-gray-200">
+            <td scope="row" class="p-4 w-16">
+              {grid === 0 ? "DNQ" : grid}
+            </td>
+            <td class="p-4 w-64">
+              {driver.name} {driver.familyName}
+            </td>
+            <td class="p-4 w-48">{constructor.name}</td>
+            <td class="p-4 w-24">-</td>
+            <td class="p-4 w-24">-</td>
+            <td class="p-4 w-24">-</td>
+          </tr>
+        )
+      )
+    }
+  </tbody>
+</table>

@@ -93,3 +93,13 @@
     @apply border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700;
   }
 }
+
+@layer components {
+  .button-like {
+    @apply block p-4 text-center bg-gray-200 rounded-md hover:bg-gray-300;
+  }
+
+  .button-like-sm {
+    @apply block p-2 text-center bg-gray-200 rounded-md hover:bg-gray-300;
+  }
+}

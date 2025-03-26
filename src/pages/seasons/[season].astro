@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { uniqBy, sortBy } from "lodash-es";
+import TitleWithNavigation from "../../components/TitleWithNavigation.astro";
 
 export async function getStaticPaths() {
   const seasons = await getCollection("seasons");
@@ -31,39 +32,16 @@ const seasonRaces = sortBy(
 ---
 
 <Layout>
-  <div class="mt-4 flex items-center gap-4">
-    {
-      previousSeason && (
-        <a
-          title="Previous season"
-          class="text-2xl"
-          href={`/seasons/${previousSeason.data.id}`}
-        >
-          ⏮︎
-        </a>
-      )
-    }
-    <h1>{season} season</h1>
-    {
-      nextSeason && (
-        <a
-          title="Next season"
-          class="text-2xl"
-          href={`/seasons/${nextSeason.data.id}`}
-        >
-          ⏭︎
-        </a>
-      )
-    }
-  </div>
+  <TitleWithNavigation
+    previous={previousSeason ? `/seasons/${previousSeason.data.id}` : undefined}
+    next={nextSeason ? `/seasons/${nextSeason.data.id}` : undefined}
+    title={`${season} season`}
+  />
 
-  <div class="mt-4 grid grid-cols-2 md:grid-cols-4">
+  <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
     {
       seasonRaces.map(({ data: { country, round } }) => (
-        <a
-          class={`block p-4 m-2 text-center bg-gray-200 rounded-md hover:bg-gray-300`}
-          href={`/season/${season}/${round}`}
-        >
+        <a class="button-like" href={`/seasons/${season}/${round}`}>
           Round {round}: {country}
         </a>
       ))
