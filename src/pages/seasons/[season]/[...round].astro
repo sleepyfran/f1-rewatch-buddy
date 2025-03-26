@@ -4,6 +4,7 @@ import Layout from "../../../layouts/Layout.astro";
 import TitleWithNavigation from "../../../components/TitleWithNavigation.astro";
 import { getEntry } from "astro:content";
 import QualifyingResults from "../../../components/QualifyingResults.astro";
+import RaceResults from "../../../components/RaceResults.astro";
 
 export async function getStaticPaths() {
   const races = await getCollection("results");
@@ -65,7 +66,7 @@ const { data: circuit } = await getEntry(circuitId);
       <button class="button-like-sm">Watched</button>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 border-t-2 border-red-100 pt-4">
       <h2 class="font-light mb-4">Before you watch</h2>
 
       <div class="my-2">
@@ -76,10 +77,16 @@ const { data: circuit } = await getEntry(circuitId);
 
     <div class="mt-4">
       <h2 class="font-light mb-4">After you watch</h2>
-      <p>
+      <!-- <p>
         The results of the race and other info will be shown once you mark the
         race as watched.
-      </p>
+      </p> -->
+
+      <!-- To be hidden! -->
+      <div class="my-2">
+        <h3 class="mb-4">Race Results</h3>
+        <RaceResults season={season} round={round} />
+      </div>
     </div>
   </main>
 </Layout>

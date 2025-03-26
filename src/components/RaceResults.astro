@@ -17,11 +17,6 @@ const roundResults = allRaces.filter(
     raceSeason === season && raceRound === round
 );
 
-const [grid, nonQualifiedGrid] = partition(
-  roundResults,
-  ({ data: { grid } }) => grid > 0
-);
-
 async function resolveReferences({ data }: CollectionEntry<"results">) {
   const constructor = await getEntry(data.constructorId);
   const driver = await getEntry(data.driverId);
@@ -33,11 +28,10 @@ async function resolveReferences({ data }: CollectionEntry<"results">) {
   };
 }
 
-const orderedGrid = await Promise.all(
-  sortBy(grid, ({ data: { grid } }) => grid).map(resolveReferences)
-);
-const didNotQualify = await Promise.all(
-  nonQualifiedGrid.map(resolveReferences)
+const orderedResults = await Promise.all(
+  sortBy(roundResults, ({ data: { position } }) => position).map(
+    resolveReferences
+  )
 );
 
 const thClasses = "px-6 py-3 text-left";
@@ -46,29 +40,50 @@ const thClasses = "px-6 py-3 text-left";
 <table class="table-fixed bg-red-100 border-red-400 border-2">
   <thead class="text-sm text-red-900 uppercase">
     <tr>
-      <th scope="col" class={thClasses}>Grid</th>
+      <th scope="col" class={thClasses}>Position</th>
+      <th scope="col" class={thClasses}>Grid diff</th>
       <th scope="col" class={thClasses}>Driver</th>
       <th scope="col" class={thClasses}>Constructor</th>
-      <th scope="col" class={thClasses}>Q1</th>
-      <th scope="col" class={thClasses}>Q2</th>
-      <th scope="col" class={thClasses}>Q3</th>
+      <th scope="col" class={thClasses}>Points</th>
+      <th scope="col" class={thClasses}>Details</th>
     </tr>
   </thead>
   <tbody>
     {
-      [...orderedGrid, ...didNotQualify].map(
-        ({ grid, driver, constructor }) => (
+      orderedResults.map(
+        ({
+          position,
+          driver,
+          constructor,
+          differenceGridPosition,
+          points,
+          status,
+        }) => (
           <tr class="border-gray-200">
             <td scope="row" class="p-4 w-16">
-              {grid === 0 ? "DNQ" : grid}
+              {position}
             </td>
+            <td class="p-4 w-16">{differenceGridPosition}</td>
             <td class="p-4 w-64">
               {driver.name} {driver.familyName}
             </td>
             <td class="p-4 w-48">{constructor.name}</td>
-            <td class="p-4 w-24">-</td>
-            <td class="p-4 w-24">-</td>
-            <td class="p-4 w-24">-</td>
+            <td class="p-4 w-16">{points}</td>
+            <td class="p-4 w-48">
+              {status !== "Finished" ? (
+                <span
+                  class={
+                    status.startsWith("+")
+                      ? "text-slate-700"
+                      : "text-red-500 font-bold"
+                  }
+                >
+                  {status}
+                </span>
+              ) : (
+                "-"
+              )}
+            </td>
           </tr>
         )
       )
