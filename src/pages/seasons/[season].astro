@@ -1,0 +1,71 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { uniqBy, sortBy } from "lodash-es";
+
+export async function getStaticPaths() {
+  const seasons = await getCollection("seasons");
+  return seasons.map(({ id }) => ({
+    params: { season: id },
+  }));
+}
+
+const { season: seasonStr } = Astro.params;
+
+const season = parseInt(seasonStr);
+
+const allSeasons = await getCollection("seasons");
+const previousSeason = allSeasons.find(({ data: { id } }) => id === season - 1);
+const nextSeason = allSeasons.find(({ data: { id } }) => id === season + 1);
+
+const allRaces = await getCollection("results");
+const seasonRaces = sortBy(
+  uniqBy(
+    allRaces.filter(
+      ({ data: { season: raceSeason } }) => raceSeason === season
+    ),
+    ({ data: { country } }) => country
+  ),
+  ({ data: { round } }) => round
+);
+---
+
+<Layout>
+  <h1 class="mt-4">{season} season</h1>
+
+  <div class="mt-4 grid grid-cols-2 md:grid-cols-4">
+    {
+      seasonRaces.map(({ data: { country, round } }) => (
+        <a
+          class={`block p-4 m-2 text-center bg-gray-200 rounded-md hover:bg-gray-300`}
+          href={`/season/${season}/${round}`}
+        >
+          Round {round}: {country}
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="flex my-5">
+    {
+      previousSeason && (
+        <a
+          href={`/seasons/${previousSeason.data.id}`}
+          class="block p-2 m-2 text-center bg-gray-100 rounded-md hover:bg-gray-200"
+        >
+          Previous Season
+        </a>
+      )
+    }
+    {
+      nextSeason && (
+        <a
+          href={`/seasons/${nextSeason.data.id}`}
+          class="block p-2 m-2 text-center bg-gray-100 rounded-md hover:bg-gray-200"
+        >
+          Next Season
+        </a>
+      )
+    }
+  </div>
+</Layout>
