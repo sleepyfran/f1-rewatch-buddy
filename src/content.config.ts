@@ -24,7 +24,7 @@ const constructors = defineCollection({
       csvParse(fileContent, { columns: true, skip_empty_lines: true }),
   }),
   schema: z.object({
-    year: z.string().transform((val) => parseInt(val)),
+    year: z.coerce.number(),
     id: z.string(),
     wikiUrl: z.string().url(),
     name: z.string(),
@@ -72,9 +72,21 @@ const results = defineCollection({
   }),
 });
 
+const seasons = defineCollection({
+  loader: file("src/data/seasons.csv", {
+    parser: (fileContent) =>
+      csvParse(fileContent, { columns: true, skip_empty_lines: true }),
+  }),
+  schema: z.object({
+    id: z.coerce.number(),
+    wikiUrl: z.string().url(),
+  }),
+});
+
 export const collections = {
   circuits,
   constructors,
   drivers,
   results,
+  seasons,
 };
