@@ -1,8 +1,23 @@
 ---
-import Landing from "../components/Landing.astro";
 import Layout from "../layouts/Layout.astro";
+import SeasonSelector from "../components/SeasonSelector.astro";
 ---
 
 <Layout>
-  <Landing />
+  <main class="mt-4 md:max-w-1/2 md:p-0 p-2">
+    <p>
+      With F1 Rewatch Buddy you can track your progress while re-watching
+      previous F1 seasons, as well as get context information of qualifying
+      results before starting to watch a race and the driver standings before
+      and after a race.
+    </p>
+    <br />
+    <p>Happy re-watching!</p>
+
+    <blockquote>Currently supported seasons: 2000 to 2024</blockquote>
+
+    <hr />
+
+    <SeasonSelector />
+  </main>
 </Layout>
