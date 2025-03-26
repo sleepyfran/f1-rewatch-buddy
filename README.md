@@ -5,10 +5,6 @@ old Formula 1 seasons and includes a bunch of goodies to help you watch them
 in context, showing you the qualifying results, standings after the race and
 more useful information.
 
-## Show me!
-
-TBD once the page is up and running!
-
 ## Building locally
 
 The project uses Astro to generate all of the static files. To get up and running,
