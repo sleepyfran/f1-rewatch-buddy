@@ -90,16 +90,32 @@
   }
 
   blockquote {
-    @apply border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700;
+    @apply border-l-4 border-gray-300 dark:border-gray-400 pl-4 my-4 italic text-gray-700 dark:text-gray-400;
   }
 }
 
 @layer components {
+  .app-table {
+    @apply table-fixed bg-red-100 dark:bg-red-950 border-red-400 border-2;
+  }
+
+  .app-table-head {
+    @apply text-sm text-red-900 dark:text-red-200 uppercase;
+  }
+
+  .app-border-t {
+    @apply border-t-2 border-red-100 dark:border-red-800 mb-4;
+  }
+
+  .app-border-v {
+    @apply border-1 border-red-100 dark:border-red-800;
+  }
+
   .button-like {
-    @apply block p-4 text-center bg-gray-200 rounded-md hover:bg-gray-300;
+    @apply block p-4 text-center bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-800;
   }
 
   .button-like-sm {
-    @apply block p-2 text-center bg-gray-200 rounded-md hover:bg-gray-300;
+    @apply block p-2 text-center bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-800;
   }
 }
