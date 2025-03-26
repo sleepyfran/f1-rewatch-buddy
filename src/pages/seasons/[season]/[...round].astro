@@ -46,7 +46,7 @@ const { data: circuit } = await getEntry(circuitId);
 ---
 
 <Layout>
-  <main>
+  <main data-season={season} data-round={round}>
     <TitleWithNavigation
       previous={previousRound
         ? `/seasons/${season}/${previousRound}`
@@ -58,16 +58,23 @@ const { data: circuit } = await getEntry(circuitId);
       <h4>
         <a target="_blank" href={circuit.wikiUrl}>{circuit.name}</a>
       </h4>
-      <p class="font-bold">Pending to watch</p>
+      <p id="watch-status" class="font-bold">Pending to watch</p>
     </div>
 
     <div class="flex items-baseline gap-2">
       <p>Mark as:</p>
-      <button class="button-like-sm">Currently watching</button>
-      <button class="button-like-sm">Watched</button>
+      <button id="mark-as-pending" class="button-like-sm hidden">Pending</button
+      >
+      <!-- <button id="mark-as-watching" class="button-like-sm"
+        >Currently watching</button
+      > -->
+      <button id="mark-as-watched" class="button-like-sm">Watched</button>
     </div>
 
-    <div class="mt-4 border-t-2 border-red-100 pt-4">
+    <div
+      id="before-watching-section"
+      class="mt-4 border-t-2 border-red-100 pt-4"
+    >
       <h2 class="font-light mb-4">Before you watch</h2>
 
       <div class="my-2">
@@ -78,21 +85,91 @@ const { data: circuit } = await getEntry(circuitId);
 
     <div class="mt-4">
       <h2 class="font-light mb-4">After you watch</h2>
-      <!-- <p>
+      <p id="after-watch-message">
         The results of the race and other info will be shown once you mark the
         race as watched.
-      </p> -->
+      </p>
 
-      <!-- To be hidden! -->
-      <div class="my-2">
+      <div id="race-results" class="my-2 hidden">
         <h3 class="mb-4">Race Results</h3>
         <RaceResults season={season} round={round} />
       </div>
 
-      <div class="my-2">
+      <div id="driver-standings" class="my-2 hidden">
         <h3 class="mb-4">Driver Standings after race</h3>
         <DriverStandings season={season} round={round} />
       </div>
     </div>
   </main>
 </Layout>
+
+<script>
+  import * as Storage from "../../../storage";
+
+  const seasonStr = document.querySelector("main")?.dataset.season;
+  const roundStr = document.querySelector("main")?.dataset.round;
+
+  if (!seasonStr || !roundStr) {
+    throw new Error("Season or round not set in the DOM");
+  }
+
+  const season = parseInt(seasonStr);
+  const round = parseInt(roundStr);
+
+  if (isNaN(season) || isNaN(round)) {
+    throw new Error("Invalid season or round");
+  }
+
+  const raceStatus = Storage.retrieveRace(season, round);
+
+  const watchStatus = document.getElementById("watch-status")!;
+  const beforeWatchingSection = document.getElementById(
+    "before-watching-section"
+  )!;
+  const afterWatchMessage = document.getElementById("after-watch-message")!;
+  const raceResults = document.getElementById("race-results")!;
+  const driverStandings = document.getElementById("driver-standings")!;
+  const markAsPendingButton = document.getElementById("mark-as-pending")!;
+  const markAsWatchedButton = document.getElementById("mark-as-watched")!;
+  // const markAsWatchingButton = document.getElementById("mark-as-watching")!;
+
+  switch (raceStatus.status) {
+    case "pending":
+      watchStatus.innerText = "Pending to watch";
+      markAsPendingButton.classList.add("hidden");
+      // markAsWatchingButton.classList.remove("hidden");
+      markAsWatchedButton.classList.remove("hidden");
+      break;
+    case "watching":
+      watchStatus.innerText = "Currently watching";
+      markAsPendingButton.classList.remove("hidden");
+      // markAsWatchingButton.classList.add("hidden");
+      markAsWatchedButton.classList.remove("hidden");
+      break;
+    case "watched":
+      watchStatus.innerText = "Watched";
+      beforeWatchingSection.classList.add("hidden");
+      afterWatchMessage.classList.add("hidden");
+      raceResults.classList.remove("hidden");
+      driverStandings.classList.remove("hidden");
+      markAsWatchedButton.classList.add("hidden");
+      // markAsWatchingButton.classList.add("hidden");
+      markAsPendingButton.classList.remove("hidden");
+      break;
+  }
+
+  markAsPendingButton.addEventListener("click", () => {
+    Storage.setAsPending(season, round);
+    window.location.reload();
+  });
+
+  markAsWatchedButton.addEventListener("click", () => {
+    Storage.setAsWatched(season, round);
+    window.location.reload();
+  });
+
+  // markAsWatchingButton.addEventListener("click", () => {
+  //   Storage.setAsWatching(season, round, 0);
+  //   window.location.reload();
+  // });
+</script>
