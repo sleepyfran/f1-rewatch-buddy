@@ -31,7 +31,31 @@ const seasonRaces = sortBy(
 ---
 
 <Layout>
-  <h1 class="mt-4">{season} season</h1>
+  <div class="mt-4 flex items-center gap-4">
+    {
+      previousSeason && (
+        <a
+          title="Previous season"
+          class="text-2xl"
+          href={`/seasons/${previousSeason.data.id}`}
+        >
+          ⏮︎
+        </a>
+      )
+    }
+    <h1>{season} season</h1>
+    {
+      nextSeason && (
+        <a
+          title="Next season"
+          class="text-2xl"
+          href={`/seasons/${nextSeason.data.id}`}
+        >
+          ⏭︎
+        </a>
+      )
+    }
+  </div>
 
   <div class="mt-4 grid grid-cols-2 md:grid-cols-4">
     {
@@ -43,29 +67,6 @@ const seasonRaces = sortBy(
           Round {round}: {country}
         </a>
       ))
-    }
-  </div>
-
-  <div class="flex my-5">
-    {
-      previousSeason && (
-        <a
-          href={`/seasons/${previousSeason.data.id}`}
-          class="block p-2 m-2 text-center bg-gray-100 rounded-md hover:bg-gray-200"
-        >
-          Previous Season
-        </a>
-      )
-    }
-    {
-      nextSeason && (
-        <a
-          href={`/seasons/${nextSeason.data.id}`}
-          class="block p-2 m-2 text-center bg-gray-100 rounded-md hover:bg-gray-200"
-        >
-          Next Season
-        </a>
-      )
     }
   </div>
 </Layout>
