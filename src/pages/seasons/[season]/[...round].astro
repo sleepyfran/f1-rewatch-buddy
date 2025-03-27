@@ -6,10 +6,16 @@ import { getEntry } from "astro:content";
 import QualifyingResults from "../../../components/QualifyingResults.astro";
 import RaceResults from "../../../components/RaceResults.astro";
 import DriverStandings from "../../../components/DriverStandings.astro";
+import { uniqBy } from "lodash-es";
 
 export async function getStaticPaths() {
   const races = await getCollection("results");
-  return races.map(({ data: { season, round } }) => ({
+  const uniqRaces = uniqBy(
+    races,
+    ({ data: { season, round } }) => `${season}-${round}`
+  );
+
+  return uniqRaces.map(({ data: { season, round } }) => ({
     params: { season: String(season), round: String(round) },
   }));
 }
