@@ -71,9 +71,9 @@ const { data: circuit } = await getEntry(circuitId);
       <p>Mark as:</p>
       <button id="mark-as-pending" class="button-like-sm hidden">Pending</button
       >
-      <!-- <button id="mark-as-watching" class="button-like-sm"
+      <button id="mark-as-watching" class="button-like-sm"
         >Currently watching</button
-      > -->
+      >
       <button id="mark-as-watched" class="button-like-sm">Watched</button>
     </div>
 
@@ -134,19 +134,19 @@ const { data: circuit } = await getEntry(circuitId);
   const driverStandings = document.getElementById("driver-standings")!;
   const markAsPendingButton = document.getElementById("mark-as-pending")!;
   const markAsWatchedButton = document.getElementById("mark-as-watched")!;
-  // const markAsWatchingButton = document.getElementById("mark-as-watching")!;
+  const markAsWatchingButton = document.getElementById("mark-as-watching")!;
 
   switch (raceStatus.status) {
     case "pending":
       watchStatus.innerText = "Pending to watch";
       markAsPendingButton.classList.add("hidden");
-      // markAsWatchingButton.classList.remove("hidden");
+      markAsWatchingButton.classList.remove("hidden");
       markAsWatchedButton.classList.remove("hidden");
       break;
     case "watching":
       watchStatus.innerText = "Currently watching";
       markAsPendingButton.classList.remove("hidden");
-      // markAsWatchingButton.classList.add("hidden");
+      markAsWatchingButton.classList.add("hidden");
       markAsWatchedButton.classList.remove("hidden");
       break;
     case "watched":
@@ -156,7 +156,7 @@ const { data: circuit } = await getEntry(circuitId);
       raceResults.classList.remove("hidden");
       driverStandings.classList.remove("hidden");
       markAsWatchedButton.classList.add("hidden");
-      // markAsWatchingButton.classList.add("hidden");
+      markAsWatchingButton.classList.add("hidden");
       markAsPendingButton.classList.remove("hidden");
       break;
   }
@@ -171,8 +171,43 @@ const { data: circuit } = await getEntry(circuitId);
     window.location.reload();
   });
 
-  // markAsWatchingButton.addEventListener("click", () => {
-  //   Storage.setAsWatching(season, round, 0);
-  //   window.location.reload();
-  // });
+  markAsWatchingButton.addEventListener("click", () => {
+    const timestampStr = prompt(
+      "In which time are you currently? Format: HH:MM:SS"
+    );
+
+    if (!timestampStr) {
+      return;
+    }
+
+    const [hourStr, minuteStr, secondStr] = timestampStr.split(":");
+    const hour = parseInt(hourStr);
+    const minute = parseInt(minuteStr);
+    const second = parseInt(secondStr);
+
+    if (hour > 5) {
+      alert("There are no races that long");
+      return;
+    }
+
+    if (hour < 0 || isNaN(hour)) {
+      alert("That's not how hours work! Hours should be between 0 and 5.");
+      return;
+    }
+
+    if (minute < 0 || minute > 60 || isNaN(minute)) {
+      alert("That's not how minutes work! Minutes should be between 0 and 60.");
+      return;
+    }
+
+    if (second < 0 || second > 60 || isNaN(second)) {
+      alert("That's not how seconds work! Seconds should be between 0 and 60.");
+      return;
+    }
+
+    const timestamp = hour * 24 * 60 + (minute + 60) + second;
+
+    Storage.setAsWatching(season, round, timestamp);
+    window.location.reload();
+  });
 </script>
