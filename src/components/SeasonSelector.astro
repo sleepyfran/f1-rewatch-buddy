@@ -10,10 +10,41 @@ const seasons = await getCollection("seasons");
   <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
     {
       seasons.map(({ data: { id } }) => (
-        <a href={`/seasons/${id}`} class="button-like">
+        <a data-season={id} href={`/seasons/${id}`} class="button-like">
           {id}
         </a>
       ))
     }
   </div>
 </div>
+
+<script>
+  import * as Storage from "../storage";
+
+  const allSeasonNodes = document.querySelectorAll("[data-season]");
+
+  allSeasonNodes.forEach((seasonItemNode) => {
+    const htmlElement = seasonItemNode as HTMLElement;
+    const seasonStr = htmlElement.dataset.season;
+
+    if (!seasonStr) {
+      throw new Error(`Season not set in node ${htmlElement}`);
+    }
+
+    const season = parseInt(seasonStr);
+    if (isNaN(season)) {
+      throw new Error(`Invalid season ${seasonStr}`);
+    }
+
+    const seasonStatus = Storage.retrieveSeason(season);
+    const isInProgress = seasonStatus.some(({ status }) => {
+      return status === "watching";
+    });
+
+    if (isInProgress) {
+      seasonItemNode.classList.add("ring-2");
+      seasonItemNode.classList.add("ring-red-200");
+      seasonItemNode.classList.add("dark:ring-red-400");
+    }
+  });
+</script>

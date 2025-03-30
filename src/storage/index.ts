@@ -49,6 +49,23 @@ type RaceStatus =
   | { status: "watched" }
   | { status: "watching"; timestamp: number };
 
+const toRaceStatus = (rawStatus: number | null): RaceStatus => {
+  if (rawStatus === null || rawStatus === undefined) {
+    return { status: "pending" };
+  }
+
+  if (rawStatus === -1) {
+    return { status: "watched" };
+  }
+
+  return { status: "watching", timestamp: rawStatus };
+};
+
+export const retrieveSeason = (season: number): RaceStatus[] => {
+  const seasonData = getDataOrDefaultOf(season);
+  return seasonData.map(toRaceStatus);
+};
+
 export const retrieveRace = (season: number, round: number): RaceStatus => {
   const seasonData = getDataOrDefaultOf(season);
   const raceData = retrieveRound(seasonData, round);
