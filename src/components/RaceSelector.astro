@@ -26,9 +26,61 @@ const uniqueSeasonRaces = uniqBy(
 <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
   {
     uniqueSeasonRaces.map(({ data: { country, round } }) => (
-      <a class="button-like" href={`/seasons/${season}/${round}`}>
+      <a
+        data-season={season}
+        data-round={round}
+        class="button-like"
+        href={`/seasons/${season}/${round}`}
+      >
         Round {round}: {country}
       </a>
     ))
   }
 </div>
+
+<script>
+  import { capitalize } from "lodash-es";
+  import * as Storage from "../storage";
+
+  const seasonNode = document.querySelector("[data-season]") as HTMLElement;
+  const seasonStr = seasonNode.dataset.season;
+  if (!seasonStr) {
+    throw new Error(`No HTML element found with a season dataset`);
+  }
+
+  const season = parseInt(seasonStr);
+  if (isNaN(season)) {
+    throw new Error(`Invalid season in node ${seasonNode}`);
+  }
+
+  const allRaceNodes = document.querySelectorAll("[data-round]");
+  allRaceNodes.forEach((raceNode) => {
+    const htmlElement = raceNode as HTMLElement;
+    const roundStr = htmlElement.dataset.round;
+
+    if (!roundStr) {
+      throw new Error(`Round not defined in node ${htmlElement}`);
+    }
+
+    const round = parseInt(roundStr);
+    if (isNaN(round)) {
+      throw new Error(`Invalid round ${roundStr}`);
+    }
+
+    const raceStatus = Storage.retrieveRace(season, round);
+
+    switch (raceStatus.status) {
+      case "watching":
+        htmlElement.classList.add("ring-red-200");
+      case "watched":
+        htmlElement.classList.add("ring-green-400");
+        htmlElement.classList.add("ring-2");
+        break;
+      case "pending":
+        break;
+    }
+
+    const capitalizedRaceStatus = capitalize(raceStatus.status);
+    htmlElement.title = capitalizedRaceStatus;
+  });
+</script>
