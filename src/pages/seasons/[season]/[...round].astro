@@ -60,11 +60,16 @@ const { data: circuit } = await getEntry(circuitId);
       next={nextRound ? `/seasons/${season}/${nextRound}` : undefined}
       title={`Season ${season}, ${circuit.country}`}
     />
-    <div class="flex items-baseline gap-4">
+    <div class="flex flex-col items-baseline mb-4">
       <h4>
         <a target="_blank" href={circuit.wikiUrl}>{circuit.name}</a>
       </h4>
-      <p id="watch-status" class="font-bold">Pending to watch</p>
+      <div class="flex gap-2 items-center">
+        <p id="watch-status" class="font-bold">Pending to watch</p>
+        <button id="update-watch-time" class="hidden button-like-xs">
+          Update
+        </button>
+      </div>
     </div>
 
     <div class="flex items-baseline gap-2">
@@ -135,6 +140,7 @@ const { data: circuit } = await getEntry(circuitId);
   const markAsPendingButton = document.getElementById("mark-as-pending")!;
   const markAsWatchedButton = document.getElementById("mark-as-watched")!;
   const markAsWatchingButton = document.getElementById("mark-as-watching")!;
+  const updateWatchTimeButton = document.getElementById("update-watch-time")!;
 
   switch (raceStatus.status) {
     case "pending":
@@ -150,6 +156,7 @@ const { data: circuit } = await getEntry(circuitId);
       });
 
       watchStatus.innerText = `Currently watching. Left at ${time}`;
+      updateWatchTimeButton.classList.remove("hidden");
       markAsPendingButton.classList.remove("hidden");
       markAsWatchingButton.classList.add("hidden");
       markAsWatchedButton.classList.remove("hidden");
@@ -177,7 +184,7 @@ const { data: circuit } = await getEntry(circuitId);
     window.location.reload();
   });
 
-  markAsWatchingButton.addEventListener("click", () => {
+  const promptAndUpdateWatchTime = () => {
     const timestampStr = prompt(
       "In which time are you currently? Format: HH:MM:SS"
     );
@@ -199,5 +206,8 @@ const { data: circuit } = await getEntry(circuitId);
 
     Storage.setAsWatching(season, round, timestamp);
     window.location.reload();
-  });
+  };
+
+  markAsWatchingButton.addEventListener("click", promptAndUpdateWatchTime);
+  updateWatchTimeButton.addEventListener("click", promptAndUpdateWatchTime);
 </script>
