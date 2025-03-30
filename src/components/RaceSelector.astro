@@ -1,0 +1,34 @@
+---
+import { getCollection } from "astro:content";
+import { sortBy, uniqBy } from "lodash-es";
+
+type Props = {
+  season: number;
+};
+
+const { season } = Astro.props;
+
+const allRaces = await getCollection("results");
+const allSeasonResultsByDriver = allRaces.filter(
+  ({ data: { season: raceSeason } }) => raceSeason === season
+);
+
+// The results collection contains all races results by all drivers, meaning
+// for each race we'll have an entry per driver. De-dup them based on the round,
+// since we don't care about the actual driver data and just the overall info of
+// the race.
+const uniqueSeasonRaces = uniqBy(
+  allSeasonResultsByDriver,
+  ({ data: { round } }) => round
+);
+---
+
+<div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+  {
+    uniqueSeasonRaces.map(({ data: { country, round } }) => (
+      <a class="button-like" href={`/seasons/${season}/${round}`}>
+        Round {round}: {country}
+      </a>
+    ))
+  }
+</div>

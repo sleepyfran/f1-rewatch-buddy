@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { uniqBy, sortBy } from "lodash-es";
 import TitleWithNavigation from "../../components/TitleWithNavigation.astro";
+import RaceSelector from "../../components/RaceSelector.astro";
 
 export async function getStaticPaths() {
   const seasons = await getCollection("seasons");
@@ -18,17 +19,6 @@ const season = parseInt(seasonStr);
 const allSeasons = await getCollection("seasons");
 const previousSeason = allSeasons.find(({ data: { id } }) => id === season - 1);
 const nextSeason = allSeasons.find(({ data: { id } }) => id === season + 1);
-
-const allRaces = await getCollection("results");
-const seasonRaces = sortBy(
-  uniqBy(
-    allRaces.filter(
-      ({ data: { season: raceSeason } }) => raceSeason === season
-    ),
-    ({ data: { country } }) => country
-  ),
-  ({ data: { round } }) => round
-);
 ---
 
 <Layout>
@@ -38,13 +28,5 @@ const seasonRaces = sortBy(
     title={`${season} season`}
   />
 
-  <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-    {
-      seasonRaces.map(({ data: { country, round } }) => (
-        <a class="button-like" href={`/seasons/${season}/${round}`}>
-          Round {round}: {country}
-        </a>
-      ))
-    }
-  </div>
+  <RaceSelector season={season} />
 </Layout>
