@@ -143,12 +143,18 @@ const { data: circuit } = await getEntry(circuitId);
       markAsWatchingButton.classList.remove("hidden");
       markAsWatchedButton.classList.remove("hidden");
       break;
-    case "watching":
-      watchStatus.innerText = "Currently watching";
+    case "watching": {
+      const watchingDateTime = new Date(raceStatus.timestamp);
+      const time = watchingDateTime.toLocaleTimeString(undefined, {
+        hour12: false,
+      });
+
+      watchStatus.innerText = `Currently watching. Left at ${time}`;
       markAsPendingButton.classList.remove("hidden");
       markAsWatchingButton.classList.add("hidden");
       markAsWatchedButton.classList.remove("hidden");
       break;
+    }
     case "watched":
       watchStatus.innerText = "Watched";
       beforeWatchingSection.classList.add("hidden");
@@ -180,32 +186,16 @@ const { data: circuit } = await getEntry(circuitId);
       return;
     }
 
-    const [hourStr, minuteStr, secondStr] = timestampStr.split(":");
-    const hour = parseInt(hourStr);
-    const minute = parseInt(minuteStr);
-    const second = parseInt(secondStr);
-
-    if (hour > 5) {
-      alert("There are no races that long");
+    // Parse a "dummy date" that has the given time. Setting it to the second
+    // of January instead of the first to support 0 hours, otherwise the timestamp
+    // would be negative.
+    const timestamp = Date.parse(`1970-01-02 ${timestampStr}`);
+    if (isNaN(timestamp)) {
+      alert(
+        "That time doesn't look valid. Make sure that it's in the format HH:MM:SS."
+      );
       return;
     }
-
-    if (hour < 0 || isNaN(hour)) {
-      alert("That's not how hours work! Hours should be between 0 and 5.");
-      return;
-    }
-
-    if (minute < 0 || minute > 60 || isNaN(minute)) {
-      alert("That's not how minutes work! Minutes should be between 0 and 60.");
-      return;
-    }
-
-    if (second < 0 || second > 60 || isNaN(second)) {
-      alert("That's not how seconds work! Seconds should be between 0 and 60.");
-      return;
-    }
-
-    const timestamp = hour * 24 * 60 + (minute + 60) + second;
 
     Storage.setAsWatching(season, round, timestamp);
     window.location.reload();
