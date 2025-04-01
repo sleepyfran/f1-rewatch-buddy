@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { sortBy } from "lodash-es";
+import Table from "./Table.astro";
 
 type Props = {
   season: number;
@@ -33,60 +34,43 @@ const orderedResults = await Promise.all(
     resolveReferences
   )
 );
-
-const thClasses = "px-1 py-2 text-left";
 ---
 
-<table class="app-table">
-  <thead class="app-table-head">
-    <tr>
-      <th scope="col" class={thClasses}>Pos.</th>
-      <th scope="col" class={thClasses}>Grid diff</th>
-      <th scope="col" class={thClasses}>Driver</th>
-      <th scope="col" class={thClasses}>Constructor</th>
-      <th scope="col" class={thClasses}>Points</th>
-      <th scope="col" class={thClasses}>Details</th>
-    </tr>
-  </thead>
-  <tbody>
+<Table
+  columns={[
     {
-      orderedResults.map(
-        ({
-          position,
-          driver,
-          constructor,
-          differenceGridPosition,
-          points,
-          status,
-        }) => (
-          <tr class="border-gray-200">
-            <td scope="row" class="p-4 w-8">
-              {position}
-            </td>
-            <td class="p-4 w-8">{differenceGridPosition}</td>
-            <td class="p-4 w-64">
-              {driver.name} {driver.familyName}
-            </td>
-            <td class="p-4 w-48">{constructor.name}</td>
-            <td class="p-4 w-16">{points}</td>
-            <td class="p-4 w-48">
-              {status !== "Finished" ? (
-                <span
-                  class={
-                    status.startsWith("+")
-                      ? "text-slate-700 dark:text-slate-400"
-                      : "text-red-500 font-bold"
-                  }
-                >
-                  {status}
-                </span>
-              ) : (
-                "-"
-              )}
-            </td>
-          </tr>
-        )
-      )
-    }
-  </tbody>
-</table>
+      label: "Pos.",
+    },
+    {
+      label: "Grid diff",
+    },
+    {
+      label: "Driver",
+    },
+    {
+      label: "Constructor",
+    },
+    {
+      label: "Points",
+    },
+    {
+      label: "Details",
+    },
+  ]}
+  rows={orderedResults.map((result) => [
+    { content: result.position },
+    { content: result.differenceGridPosition },
+    { content: `${result.driver.name} ${result.driver.familyName}` },
+    { content: result.constructor.name },
+    { content: result.points },
+    {
+      content: result.status === "Finished" ? "-" : result.status,
+      classes:
+        result.status === "Finished"
+          ? undefined
+          : result.status.startsWith("+")
+            ? "text-slate-700 dark:text-slate-400"
+            : "text-red-500 font-bold",
+    },
+  ])}
+/>

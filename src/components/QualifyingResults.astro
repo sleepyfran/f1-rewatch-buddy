@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { partition, sortBy } from "lodash-es";
+import Table from "./Table.astro";
 
 type Props = {
   season: number;
@@ -39,39 +40,37 @@ const orderedGrid = await Promise.all(
 const didNotQualify = await Promise.all(
   nonQualifiedGrid.map(resolveReferences)
 );
-
-const thClasses = "px-1 py-2 text-left";
 ---
 
-<table class="app-table">
-  <thead class="app-table-head">
-    <tr>
-      <th scope="col" class={thClasses}>Grid</th>
-      <th scope="col" class={thClasses}>Driver</th>
-      <th scope="col" class={thClasses}>Constructor</th>
-      <th scope="col" class={thClasses}>Q1</th>
-      <th scope="col" class={thClasses}>Q2</th>
-      <th scope="col" class={thClasses}>Q3</th>
-    </tr>
-  </thead>
-  <tbody>
+<Table
+  columns={[
     {
-      [...orderedGrid, ...didNotQualify].map(
-        ({ grid, driver, constructor }) => (
-          <tr class="border-gray-200">
-            <td scope="row" class="p-4 w-16">
-              {grid === 0 ? "DNQ" : grid}
-            </td>
-            <td class="p-4 w-64">
-              {driver.name} {driver.familyName}
-            </td>
-            <td class="p-4 w-48">{constructor.name}</td>
-            <td class="p-4 w-24">-</td>
-            <td class="p-4 w-24">-</td>
-            <td class="p-4 w-24">-</td>
-          </tr>
-        )
-      )
-    }
-  </tbody>
-</table>
+      label: "Grid",
+    },
+    {
+      label: "Driver",
+    },
+    {
+      label: "Constructor",
+    },
+    {
+      label: "Q1",
+    },
+    {
+      label: "Q2",
+    },
+    {
+      label: "Q3",
+    },
+  ]}
+  rows={[...orderedGrid, ...didNotQualify].map((result) => [
+    { content: result.grid === 0 ? "DNQ" : result.grid },
+    {
+      content: `${result.driver.name} ${result.driver.familyName}`,
+    },
+    { content: result.constructor.name },
+    { content: "-" },
+    { content: "-" },
+    { content: "-" },
+  ])}
+/>

@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { sortBy } from "lodash-es";
+import Table from "./Table.astro";
 
 type Props = {
   season: number;
@@ -31,33 +32,35 @@ const orderedResults = await Promise.all(
     resolveReferences
   )
 );
-
-const thClasses = "px-1 py-2 text-left";
 ---
 
-<table class="app-table">
-  <thead class="app-table-head">
-    <tr>
-      <th scope="col" class={thClasses}>Pos.</th>
-      <th scope="col" class={thClasses}>Driver</th>
-      <th scope="col" class={thClasses}>Points</th>
-      <th scope="col" class={thClasses}>Wins</th>
-    </tr>
-  </thead>
-  <tbody>
+<Table
+  columns={[
     {
-      orderedResults.map(({ position, driver, points, wins }) => (
-        <tr class="border-gray-200">
-          <td scope="row" class="p-4 w-16">
-            {position}
-          </td>
-          <td class="p-4 w-64">
-            {driver.name} {driver.familyName}
-          </td>
-          <td class="p-4 w-16">{points}</td>
-          <td class="p-4 w-16">{wins}</td>
-        </tr>
-      ))
-    }
-  </tbody>
-</table>
+      label: "Pos.",
+    },
+    {
+      label: "Driver",
+    },
+    {
+      label: "Points",
+    },
+    {
+      label: "Wins",
+    },
+  ]}
+  rows={orderedResults.map((result) => [
+    {
+      content: result.position,
+    },
+    {
+      content: `${result.driver.name} ${result.driver.familyName}`,
+    },
+    {
+      content: result.points,
+    },
+    {
+      content: result.wins,
+    },
+  ])}
+/>

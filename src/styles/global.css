@@ -95,12 +95,17 @@
 }
 
 @layer components {
-  .app-table {
+  table {
     @apply table-fixed bg-red-100 dark:bg-red-950 border-red-400 border-2;
   }
 
-  .app-table-head {
+  thead {
     @apply text-sm text-red-900 dark:text-red-200 uppercase;
+  }
+
+  th,
+  td {
+    @apply px-4 py-2 text-left;
   }
 
   .app-border-t {

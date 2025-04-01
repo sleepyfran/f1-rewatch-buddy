@@ -1,0 +1,36 @@
+---
+type Column = {
+  label: string;
+};
+
+type RowItem = {
+  content: string | number;
+  classes?: string;
+};
+
+type Props = {
+  columns: Column[];
+  rows: RowItem[][];
+};
+
+const { columns, rows } = Astro.props;
+---
+
+<table>
+  <thead>
+    <tr>
+      {columns.map((column) => <th>{column.label}</th>)}
+    </tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((rowItems) => (
+        <tr>
+          {rowItems.map((item) => (
+            <td class={item.classes}>{item.content}</td>
+          ))}
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
