@@ -16,7 +16,26 @@ type Props = {
 const { columns, rows } = Astro.props;
 ---
 
-<table>
+<div
+  class="md:hidden flex flex-col bg-red-100 dark:bg-red-950 border border-red-400"
+>
+  {
+    rows.map((rowItems) => (
+      <div class="flex flex-wrap border-b border-red-400">
+        {rowItems.map((item, itemIndex) => (
+          <div class={`p-4 ${item.classes}`}>
+            <span class="font-bold">
+              {columns[itemIndex % columns.length].label}:{" "}
+            </span>
+            {item.content}
+          </div>
+        ))}
+      </div>
+    ))
+  }
+</div>
+
+<table class="hidden md:table">
   <thead>
     <tr>
       {columns.map((column) => <th>{column.label}</th>)}
