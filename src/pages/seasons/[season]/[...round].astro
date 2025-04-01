@@ -51,64 +51,59 @@ const { circuitId } = roundInformation.data;
 const { data: circuit } = await getEntry(circuitId);
 ---
 
-<Layout>
-  <main data-season={season} data-round={round}>
-    <TitleWithNavigation
-      previous={previousRound
-        ? `/seasons/${season}/${previousRound}`
-        : undefined}
-      next={nextRound ? `/seasons/${season}/${nextRound}` : undefined}
-      title={`Season ${season}, ${circuit.country}`}
-    />
-    <div class="flex flex-col items-baseline mb-4">
-      <h4>
-        <a target="_blank" href={circuit.wikiUrl}>{circuit.name}</a>
-      </h4>
-      <div class="flex gap-2 items-center">
-        <p id="watch-status" class="font-bold">Pending to watch</p>
-        <button id="update-watch-time" class="hidden button-like-xs">
-          Update
-        </button>
-      </div>
+<Layout data-season={season} data-round={round}>
+  <TitleWithNavigation
+    previous={previousRound ? `/seasons/${season}/${previousRound}` : undefined}
+    next={nextRound ? `/seasons/${season}/${nextRound}` : undefined}
+    title={`Season ${season}, ${circuit.country}`}
+  />
+  <div class="flex flex-col items-baseline mb-4">
+    <h4>
+      <a target="_blank" href={circuit.wikiUrl}>{circuit.name}</a>
+    </h4>
+    <div class="flex gap-2 items-center">
+      <p id="watch-status" class="font-bold">Pending to watch</p>
+      <button id="update-watch-time" class="hidden button-like-xs">
+        Update
+      </button>
+    </div>
+  </div>
+
+  <div class="flex items-baseline gap-2">
+    <p>Mark as:</p>
+    <button id="mark-as-pending" class="button-like-sm hidden">Pending</button>
+    <button id="mark-as-watching" class="button-like-sm"
+      >Currently watching</button
+    >
+    <button id="mark-as-watched" class="button-like-sm">Watched</button>
+  </div>
+
+  <div id="before-watching-section" class="mt-4 app-border-t pt-4">
+    <h2 class="font-light mb-4">Before you watch</h2>
+
+    <div class="my-2">
+      <h3 class="mb-4">Qualifying Results</h3>
+      <QualifyingResults season={season} round={round} />
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <h2 class="font-light mb-4">After you watch</h2>
+    <p id="after-watch-message">
+      The results of the race and other info will be shown once you mark the
+      race as watched.
+    </p>
+
+    <div id="race-results" class="my-2 hidden">
+      <h3 class="mb-4">Race Results</h3>
+      <RaceResults season={season} round={round} />
     </div>
 
-    <div class="flex items-baseline gap-2">
-      <p>Mark as:</p>
-      <button id="mark-as-pending" class="button-like-sm hidden">Pending</button
-      >
-      <button id="mark-as-watching" class="button-like-sm"
-        >Currently watching</button
-      >
-      <button id="mark-as-watched" class="button-like-sm">Watched</button>
+    <div id="driver-standings" class="my-2 hidden">
+      <h3 class="mb-4">Driver Standings after race</h3>
+      <DriverStandings season={season} round={round} />
     </div>
-
-    <div id="before-watching-section" class="mt-4 app-border-t pt-4">
-      <h2 class="font-light mb-4">Before you watch</h2>
-
-      <div class="my-2">
-        <h3 class="mb-4">Qualifying Results</h3>
-        <QualifyingResults season={season} round={round} />
-      </div>
-    </div>
-
-    <div class="mt-4">
-      <h2 class="font-light mb-4">After you watch</h2>
-      <p id="after-watch-message">
-        The results of the race and other info will be shown once you mark the
-        race as watched.
-      </p>
-
-      <div id="race-results" class="my-2 hidden">
-        <h3 class="mb-4">Race Results</h3>
-        <RaceResults season={season} round={round} />
-      </div>
-
-      <div id="driver-standings" class="my-2 hidden">
-        <h3 class="mb-4">Driver Standings after race</h3>
-        <DriverStandings season={season} round={round} />
-      </div>
-    </div>
-  </main>
+  </div>
 </Layout>
 
 <script>

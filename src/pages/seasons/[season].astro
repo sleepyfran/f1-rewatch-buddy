@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import { uniqBy, sortBy } from "lodash-es";
 import TitleWithNavigation from "../../components/TitleWithNavigation.astro";
 import RaceSelector from "../../components/RaceSelector.astro";
 
@@ -22,11 +21,15 @@ const nextSeason = allSeasons.find(({ data: { id } }) => id === season + 1);
 ---
 
 <Layout>
-  <TitleWithNavigation
-    previous={previousSeason ? `/seasons/${previousSeason.data.id}` : undefined}
-    next={nextSeason ? `/seasons/${nextSeason.data.id}` : undefined}
-    title={`${season} season`}
-  />
+  <div class="flex flex-col items-center">
+    <TitleWithNavigation
+      previous={previousSeason
+        ? `/seasons/${previousSeason.data.id}`
+        : undefined}
+      next={nextSeason ? `/seasons/${nextSeason.data.id}` : undefined}
+      title={`${season} season`}
+    />
 
-  <RaceSelector season={season} />
+    <RaceSelector season={season} />
+  </div>
 </Layout>
