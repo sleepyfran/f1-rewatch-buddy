@@ -96,7 +96,7 @@
 
 @layer components {
   table {
-    @apply table-fixed bg-red-100 dark:bg-red-950 border-red-400 border-2;
+    @apply w-full table-fixed bg-red-100 dark:bg-red-950 border-red-400 border-2;
   }
 
   thead {
