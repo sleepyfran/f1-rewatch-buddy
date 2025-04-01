@@ -21,7 +21,7 @@ const nextSeason = allSeasons.find(({ data: { id } }) => id === season + 1);
 ---
 
 <Layout>
-  <div class="flex flex-col items-center">
+  <div class="w-full flex flex-col items-center">
     <TitleWithNavigation
       previous={previousSeason
         ? `/seasons/${previousSeason.data.id}`

@@ -23,16 +23,16 @@ const uniqueSeasonRaces = uniqBy(
 );
 ---
 
-<div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="mt-4 w-full grid grid-cols-3 md:grid-cols-4 gap-3">
   {
     uniqueSeasonRaces.map(({ data: { country, round } }) => (
       <a
         data-season={season}
         data-round={round}
-        class="button-like"
+        class="button-like min-h-20 flex items-center justify-center"
         href={`/seasons/${season}/${round}`}
       >
-        R{round}: {country}
+        Round {round}, {country}
       </a>
     ))
   }
